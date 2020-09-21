@@ -9,6 +9,7 @@ body {
     height: 100vh;
     width: 100vw;
     background-color: #ced3ce;
+    color: #222;
 }
 
 .flx-cnt {
@@ -42,9 +43,17 @@ main {
     background-color: #efefef;
 }
 
+#calc-screen {
+    width: 98%;
+    padding: 10px 1% 0px 1%;
+    font-size: 1em;
+    text-align: right;
+    color: #666;
+}
+
 #screen {
     width: 98%;
-    padding: 10px 1%;
+    padding: 0px 1% 10px 1%;
     font-size: 3em;
     text-align: right; 
 }
