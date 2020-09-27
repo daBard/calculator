@@ -47,25 +47,29 @@ main {
 }
 
 #calc-screen {
-    width: 100%;
+    /*width: 100%;*/
     padding: 10px 1% 0px 1%;
     font-size: 1em;
     text-align: right;
     color: #666;
+    overflow-wrap: break-word;
 }
 
 #screen {
-    width: 100%;
+    /*width: 100%;*/
     padding: 0px 1% 10px 1%;
     font-size: 3em;
-    text-align: right; 
+    text-align: right;
+    overflow-wrap: break-word;
 }
 
 #keys-box {
+    height: 100%;
     width: 100%;
 }
 
 #keys {
+    height: 100%;
     width: 100%;
     display: grid;
     grid-template-columns: auto auto auto auto;

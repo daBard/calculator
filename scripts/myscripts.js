@@ -126,7 +126,12 @@ function fPeriod(_str) {
 // INIT DIVISION
 division.addEventListener('click', () => {
     if (first) {
-        firstStr = `${firstStr} /`
+        if (!firstStr) {
+            firstStr = '0 /';
+        }
+        else {
+            firstStr = `${firstStr} /`;
+        }
     }
     else {
         firstStr = `${fEquals(firstStr, secondStr)} /`;
@@ -134,13 +139,17 @@ division.addEventListener('click', () => {
     printCalc(firstStr);
     sumScreen.innerHTML = '&nbsp';
     first = false;
-    //ADD IF second == 0 then FUCK OFF
 });
 
 // INIT TIMES
 times.addEventListener('click', () => {
     if (first) {
-        firstStr = `${firstStr} *`
+        if (!firstStr) {
+            firstStr = '0 *';
+        }
+        else {
+            firstStr = `${firstStr} *`;
+        }
     }
     else {
         firstStr = `${fEquals(firstStr, secondStr)} *`;
@@ -153,7 +162,12 @@ times.addEventListener('click', () => {
 // INIT MINUS
 minus.addEventListener('click', () => {
     if (first) {
-        firstStr = `${firstStr} -`
+        if (!firstStr) {
+            firstStr = '0 -';
+        }
+        else {
+            firstStr = `${firstStr} -`;
+        }
     }
     else {
         firstStr = `${fEquals(firstStr, secondStr)} -`;
@@ -166,7 +180,12 @@ minus.addEventListener('click', () => {
 // INIT PLUS
 plus.addEventListener('click', () => {
     if (first) {
-        firstStr = `${firstStr} +`
+        if (!firstStr) {
+            firstStr = '0 +';
+        }
+        else {
+            firstStr = `${firstStr} +`;
+        }
     }
     else {
         firstStr = `${fEquals(firstStr, secondStr)} +`;
@@ -180,16 +199,25 @@ plus.addEventListener('click', () => {
 equals.addEventListener('click', () => {
     if (!first && !calcScreen.innerHTML.includes('=')) {
         firstStr = fEquals(firstStr, secondStr);
+        printCalc(firstStr);
+        sumScreen.innerHTML = '&nbsp';
+        first = true;
     }
 });
 
 function fEquals(_str, _str2) {
-    //totalStr = `${_str} ${_str2}`.replace(/[^-()\d/*+.]/g, '');
-    totalStr = `${_str} ${_str2}`.replace(/[^-\d/*+.]/g, '');
-    totalStr = eval(totalStr);
-
-    printCalc(`${_str}${_str2} =`);
-    sumScreen.innerHTML = totalStr; 
+    if (_str.includes('/') && _str2 == '0') {
+        sumScreen.innerHTML = 'undefined';
+        totalStr = '0';
+    }
+    else {
+        totalStr = `${_str} ${_str2}`.replace(/[^-\d/*+.]/g, '');
+        totalStr = Function('"use strict";return (' + totalStr + ')')();
+        totalStr = totalStr.toString();
+        //totalStr = eval(totalStr);
+        sumScreen.innerHTML = totalStr;
+    }
+    printCalc(`${_str} ${_str2} =`);
     secondStr = '';
     return totalStr;
 }
@@ -207,7 +235,4 @@ function neverEmpty(_str) {
     return _str;
 }
 
-// DIVIDE 0
 // KEYBOARD
-// DIGIT LENGTH
-// RESPONSIVE 100%
