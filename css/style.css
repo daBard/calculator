@@ -6,8 +6,9 @@ Who: daBard
 
 /* Base */
 body {
-    height: 100vh;
-    width: 100vw;
+    height: 98vh;
+    width: 98vw;
+    padding: 1vh 1vw;
     background-color: #ced3ce;
     color: #222;
 }
@@ -26,12 +27,14 @@ body {
 
 /* MAIN */
 main {
+    max-height: 640px;
     max-width: 640px;
     height: 100%;
     width: 100%;
 }
 
 #calculator {
+    height: 100%;
     width: 100%;
 }
 
@@ -44,7 +47,7 @@ main {
 }
 
 #calc-screen {
-    width: 98%;
+    width: 100%;
     padding: 10px 1% 0px 1%;
     font-size: 1em;
     text-align: right;
@@ -52,7 +55,7 @@ main {
 }
 
 #screen {
-    width: 98%;
+    width: 100%;
     padding: 0px 1% 10px 1%;
     font-size: 3em;
     text-align: right; 

@@ -184,7 +184,8 @@ equals.addEventListener('click', () => {
 });
 
 function fEquals(_str, _str2) {
-    totalStr = `${_str} ${_str2}`.replace(/[^-()\d/*+.]/g, '');
+    //totalStr = `${_str} ${_str2}`.replace(/[^-()\d/*+.]/g, '');
+    totalStr = `${_str} ${_str2}`.replace(/[^-\d/*+.]/g, '');
     totalStr = eval(totalStr);
 
     printCalc(`${_str}${_str2} =`);
@@ -195,7 +196,6 @@ function fEquals(_str, _str2) {
 
 // FUNCTIONS
 function printCalc(_calcStr) {
-    
     _calcStr = _calcStr.replace(/\//g, "÷").replace(/\*/g, "×");
     calcScreen.innerHTML = _calcStr;
 }
@@ -210,3 +210,4 @@ function neverEmpty(_str) {
 // DIVIDE 0
 // KEYBOARD
 // DIGIT LENGTH
+// RESPONSIVE 100%
