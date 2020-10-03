@@ -55,7 +55,7 @@ main {
     overflow-wrap: break-word;
 }
 
-#screen {
+#entry-screen {
     /*width: 100%;*/
     padding: 0px 1% 10px 1%;
     font-size: 3em;

@@ -1,6 +1,6 @@
 // DOM ELEMENTS
 const calcScreen = document.querySelector('#calc-screen');
-const sumScreen = document.querySelector('#screen');
+const entryScreen = document.querySelector('#entry-screen');
 const ac = document.querySelector('#ac');
 const ce = document.querySelector('#ce');
 const backspace = document.querySelector('#backspace');
@@ -23,10 +23,12 @@ const period = document.querySelector('#period');
 const equals = document.querySelector('#equals');
 
 // GLOBAL VARIABLES
-let firstStr = '';
-let secondStr = '';
+const divZero = 'undefined';
+let entryStr = '';
 let operatorStr = '';
-let totalStr = '';
+let firstNum = 0;
+let secondNum = 0;
+let totalNum = 0;
 let first = true;
 
 // INIT DIGIT-KEY EVENTS
@@ -34,160 +36,154 @@ let digitKeys = document.querySelectorAll('.digit-key')
 
 for (i = 0; i < digitKeys.length; i++) {
     digitKeys[i].addEventListener('click', (e) => {
-        if (first) { 
-            if (sumScreen.innerHTML == '&nbsp;' || sumScreen.innerHTML == '0') {    
-                firstStr = e.target.innerHTML;
-            }
-            else {
-                firstStr = firstStr + e.target.innerHTML;    
-            }
-            sumScreen.innerHTML = firstStr;
+        if (entryScreen.innerHTML == '&nbsp;' || entryScreen.innerHTML == '0' || entryScreen.innerHTML == totalNum) {    
+            if (first) { printCalc('&nbsp;'); }
+            entryStr = e.target.innerHTML;
         }
         else {
-            if (sumScreen.innerHTML == '&nbsp;' || sumScreen.innerHTML == '0') {    
-                secondStr = e.target.innerHTML;
-            }
-            else {
-                secondStr = secondStr + e.target.innerHTML;    
-            }
-            sumScreen.innerHTML = secondStr;
+            entryStr = entryStr + e.target.innerHTML;    
         }
+        entryScreen.innerHTML = entryStr;
     });
 }
 
 // INIT AC
 ac.addEventListener('click', () => {
-    firstStr = '';
-    secondStr = '';
+    entryStr = '';
     operatorStr = '';
-    totalStr = '';
+    firstNum = 0;
+    secondNum = 0;
+    totalNum = 0;
     first = true;
-    calcScreen.innerHTML = '&nbsp;';
-    sumScreen.innerHTML = '&nbsp;';
+    printCalc('&nbsp;');
+    entryScreen.innerHTML = '&nbsp;';
 });
 
 // INIT CE
 ce.addEventListener('click', () => {
-    if (first) {
-        firstStr = ''
-    }
-    else {
-        secondStr = '';
-    }
-    sumScreen.innerHTML = '&nbsp;';
+    if (first) { printCalc('&nbsp;'); }
+    entryStr = '';
+    entryScreen.innerHTML = '&nbsp;';
 });
 
 // INIT BACKSPACE
 backspace.addEventListener('click', () => {
-    if (first) {
-        firstStr = firstStr.slice(0, -1);
-        sumScreen.innerHTML = neverEmpty(firstStr); 
-    }
-    else {
-        secondStr = secondStr.slice(0, -1);
-        sumScreen.innerHTML = neverEmpty(secondStr);
-    }
+    if (first) { printCalc('&nbsp;'); }
+    entryStr = entryStr.slice(0, -1);
+    entryScreen.innerHTML = neverEmpty(entryStr);
 });
 
 // INIT NEG_POS
 neg_pos.addEventListener('click', () => {
-    if (first) { firstStr = fNeg_pos(firstStr) }
-    else { secondStr = fNeg_pos(secondStr) }
-});
-
-function fNeg_pos(_str) {
-    if (_str.charAt(0) == '-') {
-        _str = _str.substring(1);
+    if (first) { printCalc('&nbsp;'); }
+    if (entryStr.charAt(0) == '-') {
+        entryStr = entryStr.substring(1);
     } 
     else {
-        _str = '-' + _str;
+        entryStr = '-' + entryStr;
     }
-    sumScreen.innerHTML = neverEmpty(_str);
-    return _str;
-}
+    entryScreen.innerHTML = neverEmpty(entryStr);
+});
 
 // INIT PERIOD
 period.addEventListener('click', () => {
-    if (first) { firstStr = fPeriod(firstStr); }
-    else { secondStr = fPeriod(secondStr); }
-});
-
-function fPeriod(_str) {
-    if (!_str.includes('.')) {
-        if (sumScreen.innerHTML == '&nbsp;') {
-            _str = '0.';
+    if (!entryStr.includes('.')) {
+        if (entryScreen.innerHTML == '&nbsp;' || entryStr.length == 0) {
+            if (first) { printCalc('&nbsp;'); }
+            entryStr = '0.';
         }
         else {
-            _str = _str + '.';
+            entryStr = entryStr + '.';
         }
-        sumScreen.innerHTML = _str;
+        entryScreen.innerHTML = entryStr;
     }
-    return _str;
-}
+});
 
 // INIT DIVISION
 division.addEventListener('click', () => {
-    operatorStr = '/';
-    followOp();
+    //operatorStr = '/';
+    followOp('/');
 });
 
 // INIT TIMES
 times.addEventListener('click', () => {
-    operatorStr = '*';
-    followOp();
+    //operatorStr = '*';
+    followOp('*');
 });
 
 // INIT MINUS
 minus.addEventListener('click', () => {
-    operatorStr = '-';
-    followOp();
+    //operatorStr = '-';
+    followOp('-');
 });
 
 // INIT PLUS
 plus.addEventListener('click', () => {
-    operatorStr = '+';
-    followOp();
+    //operatorStr = '+';
+    followOp('+');
 });
+
+// FOLLOWS ALL OPERATORS
+function followOp(_opStr) {
+    if (entryStr == '-') { entryStr = '0'; }
+    if (first) {
+        if (calcScreen.innerHTML.includes('=')) {
+            firstNum = totalNum;
+        }
+        else {
+            firstNum = parseFloat(entryStr);
+        }
+        operatorStr = _opStr;
+        first = false;
+    }
+    else {
+        secondNum = parseFloat(entryStr);
+        firstNum = fCalculate(firstNum, secondNum, operatorStr);
+        operatorStr = _opStr;
+    }
+    printCalc(`${firstNum} ${_opStr}`);
+    entryStr = '';
+    if (entryScreen.innerHTML != divZero) { entryScreen.innerHTML = '&nbsp;'; }
+}
 
 // INIT EQUALS
 equals.addEventListener('click', () => {
-    if (!first && !calcScreen.innerHTML.includes('=')) {
-        firstStr = fEquals(firstStr, secondStr, operatorStr);
-        //printCalc(firstStr);
-        //sumScreen.innerHTML = '&nbsp';
+    if (entryStr == '-') { entryStr = '0'; }
+    if (!first && !calcScreen.innerHTML.includes('=') && entryStr.length != 0) {
+        secondNum = parseFloat(entryStr);
+        printCalc(`${firstNum} ${operatorStr} ${secondNum} =`);
+        fCalculate(firstNum, secondNum, operatorStr);
+        if (entryScreen.innerHTML != divZero) { entryScreen.innerHTML = totalNum; }
         first = true;
     }
 });
 
-function fEquals(_fStr, _sStr, _opStr) {
-    if (_opStr.includes('/') && _sStr == '0') {
-        sumScreen.innerHTML = 'undefined';
-        totalStr = '0';
+// DO CALCULATIONS
+function fCalculate(_fNum, _sNum, _opStr) {
+    if (_opStr == '/' && _sNum == 0) {
+        entryScreen.innerHTML = divZero;
+        totalNum = 0;
     }
     else {
         switch (_opStr) {
             case '/':
-                totalStr = (parseFloat(_fStr) / parseFloat(_sStr));
+                totalNum = _fNum / _sNum;
                 break;
             case '*':
-                totalStr = (parseFloat(_fStr) * parseFloat(_sStr));
+                totalNum = _fNum * _sNum;
                 break;
             case '-':
-                totalStr = (parseFloat(_fStr) - parseFloat(_sStr));
+                totalNum = _fNum - _sNum;
                 break;
             case '+':
-                totalStr = (parseFloat(_fStr) + parseFloat(_sStr));
+                totalNum = _fNum + _sNum;
                 break;
             default:
                 console.log('This should never happen!');
         }
-        sumScreen.innerHTML = totalStr;
     }
-    printCalc(`${_fStr} ${_opStr} ${_sStr} =`);
-    secondStr = '';
-    //operatorStr = '';
-    first = true;
-    return totalStr.toString();
+    entryStr = '';
+    return totalNum;
 }
 
 // FUNCTIONS
@@ -198,23 +194,11 @@ function printCalc(_calcStr) {
 
 function neverEmpty(_str) {
     if (_str == '') {
-        _str = '&nbsp;';
+        _str = '0';
     }
     return _str;
 }
 
-function followOp() {
-    if (!firstStr) {
-        firstStr = '0';
-    }
-    if (!first && secondStr) {
-        firstStr = fEquals(firstStr, secondStr, operatorStr).toString();
-    }
-    printCalc(`${firstStr} ${operatorStr}`);
-    sumScreen.innerHTML = '&nbsp';
-    first = false;
-}
-
 // KEYBOARD
-// OPERATORS WORK BACKWARDS
-// REDO LOGIC!
+// divide by 0
+

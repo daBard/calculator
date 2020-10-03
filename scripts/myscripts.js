@@ -1,6 +1,6 @@
 // DOM ELEMENTS
 const calcScreen = document.querySelector('#calc-screen');
-const sumScreen = document.querySelector('#screen');
+const entryScreen = document.querySelector('#entry-screen');
 const ac = document.querySelector('#ac');
 const ce = document.querySelector('#ce');
 const backspace = document.querySelector('#backspace');
@@ -25,7 +25,7 @@ const equals = document.querySelector('#equals');
 // GLOBAL VARIABLES
 let firstStr = '';
 let secondStr = '';
-let totalStr = '';
+let totalNum = '';
 let first = true;
 
 // INIT DIGIT-KEY EVENTS
@@ -34,22 +34,22 @@ let digitKeys = document.querySelectorAll('.digit-key')
 for (i = 0; i < digitKeys.length; i++) {
     digitKeys[i].addEventListener('click', (e) => {
         if (first) { 
-            if (sumScreen.innerHTML == '&nbsp;' || sumScreen.innerHTML == '0') {    
+            if (entryScreen.innerHTML == '&nbsp;' || entryScreen.innerHTML == '0') {    
                 firstStr = e.target.innerHTML;
             }
             else {
                 firstStr = firstStr + e.target.innerHTML;    
             }
-            sumScreen.innerHTML = firstStr;
+            entryScreen.innerHTML = firstStr;
         }
         else {
-            if (sumScreen.innerHTML == '&nbsp;' || sumScreen.innerHTML == '0') {    
+            if (entryScreen.innerHTML == '&nbsp;' || entryScreen.innerHTML == '0') {    
                 secondStr = e.target.innerHTML;
             }
             else {
                 secondStr = secondStr + e.target.innerHTML;    
             }
-            sumScreen.innerHTML = secondStr;
+            entryScreen.innerHTML = secondStr;
         }
     });
 }
@@ -58,10 +58,10 @@ for (i = 0; i < digitKeys.length; i++) {
 ac.addEventListener('click', () => {
     firstStr = '';
     secondStr = '';
-    totalStr = '';
+    totalNum = '';
     first = true;
     calcScreen.innerHTML = '&nbsp;';
-    sumScreen.innerHTML = '&nbsp;';
+    entryScreen.innerHTML = '&nbsp;';
 });
 
 // INIT CE
@@ -72,18 +72,18 @@ ce.addEventListener('click', () => {
     else {
         secondStr = '';
     }
-    sumScreen.innerHTML = '&nbsp;';
+    entryScreen.innerHTML = '&nbsp;';
 });
 
 // INIT BACKSPACE
 backspace.addEventListener('click', () => {
     if (first) {
         firstStr = firstStr.slice(0, -1);
-        sumScreen.innerHTML = neverEmpty(firstStr); 
+        entryScreen.innerHTML = neverEmpty(firstStr); 
     }
     else {
         secondStr = secondStr.slice(0, -1);
-        sumScreen.innerHTML = neverEmpty(secondStr);
+        entryScreen.innerHTML = neverEmpty(secondStr);
     }
 });
 
@@ -100,7 +100,7 @@ function fNeg_pos(_str) {
     else {
         _str = '-' + _str;
     }
-    sumScreen.innerHTML = neverEmpty(_str);
+    entryScreen.innerHTML = neverEmpty(_str);
     return _str;
 }
 
@@ -112,13 +112,13 @@ period.addEventListener('click', () => {
 
 function fPeriod(_str) {
     if (!_str.includes('.')) {
-        if (sumScreen.innerHTML == '&nbsp;') {
+        if (entryScreen.innerHTML == '&nbsp;') {
             _str = '0.';
         }
         else {
             _str = _str + '.';
         }
-        sumScreen.innerHTML = _str;
+        entryScreen.innerHTML = _str;
     }
     return _str;
 }
@@ -134,10 +134,10 @@ division.addEventListener('click', () => {
         }
     }
     else {
-        firstStr = `${fEquals(firstStr, secondStr)} /`;
+        firstStr = `${fCalculate(firstStr, secondStr)} /`;
     }
     printCalc(firstStr);
-    sumScreen.innerHTML = '&nbsp';
+    entryScreen.innerHTML = '&nbsp';
     first = false;
 });
 
@@ -152,10 +152,10 @@ times.addEventListener('click', () => {
         }
     }
     else {
-        firstStr = `${fEquals(firstStr, secondStr)} *`;
+        firstStr = `${fCalculate(firstStr, secondStr)} *`;
     }
     printCalc(firstStr);
-    sumScreen.innerHTML = '&nbsp';
+    entryScreen.innerHTML = '&nbsp';
     first = false;
 });
 
@@ -170,10 +170,10 @@ minus.addEventListener('click', () => {
         }
     }
     else {
-        firstStr = `${fEquals(firstStr, secondStr)} -`;
+        firstStr = `${fCalculate(firstStr, secondStr)} -`;
     }
     printCalc(firstStr);
-    sumScreen.innerHTML = '&nbsp';
+    entryScreen.innerHTML = '&nbsp';
     first = false;
 });
 
@@ -188,38 +188,38 @@ plus.addEventListener('click', () => {
         }
     }
     else {
-        firstStr = `${fEquals(firstStr, secondStr)} +`;
+        firstStr = `${fCalculate(firstStr, secondStr)} +`;
     }
     printCalc(firstStr);
-    sumScreen.innerHTML = '&nbsp';
+    entryScreen.innerHTML = '&nbsp';
     first = false;
 });
 
 // INIT EQUALS
 equals.addEventListener('click', () => {
     if (!first && !calcScreen.innerHTML.includes('=')) {
-        firstStr = fEquals(firstStr, secondStr);
+        firstStr = fCalculate(firstStr, secondStr);
         printCalc(firstStr);
-        sumScreen.innerHTML = '&nbsp';
+        entryScreen.innerHTML = '&nbsp';
         first = true;
     }
 });
 
-function fEquals(_str, _str2) {
+function fCalculate(_str, _str2) {
     if (_str.includes('/') && _str2 == '0') {
-        sumScreen.innerHTML = 'undefined';
-        totalStr = '0';
+        entryScreen.innerHTML = 'undefined';
+        totalNum = '0';
     }
     else {
-        totalStr = `${_str} ${_str2}`.replace(/[^-\d/*+.]/g, '');
-        totalStr = Function('"use strict";return (' + totalStr + ')')();
-        totalStr = totalStr.toString();
+        totalNum = `${_str} ${_str2}`.replace(/[^-\d/*+.]/g, '');
+        totalNum = Function('"use strict";return (' + totalNum + ')')();
+        totalNum = totalNum.toString();
         //totalStr = eval(totalStr);
-        sumScreen.innerHTML = totalStr;
+        entryScreen.innerHTML = totalNum;
     }
     printCalc(`${_str} ${_str2} =`);
     secondStr = '';
-    return totalStr;
+    return totalNum;
 }
 
 // FUNCTIONS
