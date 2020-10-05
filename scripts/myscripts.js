@@ -23,206 +23,218 @@ const period = document.querySelector('#period');
 const equals = document.querySelector('#equals');
 
 // GLOBAL VARIABLES
-let firstStr = '';
-let secondStr = '';
-let totalNum = '';
+const divZero = 'undefined';
+//const decimals = 7;
+let entryStr = '';
+let firstNum = 0;
+let secondNum = 0;
+let totalNum;
 let first = true;
 
-// INIT DIGIT-KEY EVENTS
+//INIT KEYBOARD EVENT
+document.addEventListener('keydown', (e) => {
+    console.log(e.code);
+    if (e.key >= 0 && e.key <= 9) {
+        fdigitKey(e.key)
+    }
+
+    if (e.code === 'NumpadDecimal' || e.code === 'Comma' || e.code === 'Period') { fPeriod(); }
+
+    if (e.code === 'Enter' || e.code === 'NumpadEnter') { fEquals(); }
+
+    switch(e.code) {
+        case 'Backspace':
+            fbackspace();
+            break;
+        case 'Delete':
+            if (entryScreen.innerHTML == '&nbsp;') { fac(); }         
+            else { fce(); }
+            break;
+        case 'NumpadDivide':
+            followOp('/');
+            break;
+        case 'NumpadMultiply':
+            followOp('*');
+            break;
+        case 'NumpadSubtract':
+            if (entryScreen.innerHTML == '&nbsp;') { fNegPos(); }
+            else { followOp('-'); }
+            break;
+        case 'NumpadAdd':
+            followOp('+');
+            break;
+        default:
+            break;
+    }
+});
+
+// INIT DIGITS
 let digitKeys = document.querySelectorAll('.digit-key')
 
 for (i = 0; i < digitKeys.length; i++) {
-    digitKeys[i].addEventListener('click', (e) => {
-        if (first) { 
-            if (entryScreen.innerHTML == '&nbsp;' || entryScreen.innerHTML == '0') {    
-                firstStr = e.target.innerHTML;
-            }
-            else {
-                firstStr = firstStr + e.target.innerHTML;    
-            }
-            entryScreen.innerHTML = firstStr;
-        }
-        else {
-            if (entryScreen.innerHTML == '&nbsp;' || entryScreen.innerHTML == '0') {    
-                secondStr = e.target.innerHTML;
-            }
-            else {
-                secondStr = secondStr + e.target.innerHTML;    
-            }
-            entryScreen.innerHTML = secondStr;
-        }
-    });
+    digitKeys[i].addEventListener('click', (e) => { fdigitKey(e.target.innerHTML) });
+}
+
+function fdigitKey(_key) {
+    if (entryStr.length == 0) {
+        if (first) { printCalc('&nbsp;'); }
+        entryStr = _key;
+    }
+    else {
+        entryStr = entryStr + _key;    
+    }
+    entryScreen.innerHTML = entryStr;
 }
 
 // INIT AC
-ac.addEventListener('click', () => {
-    firstStr = '';
-    secondStr = '';
-    totalNum = '';
+ac.addEventListener('click', fac);
+
+function fac() {
+    entryStr = '';
+    operatorStr = '';
+    firstNum = 0;
+    secondNum = 0;
+    delete totalNum;
     first = true;
-    calcScreen.innerHTML = '&nbsp;';
+    printCalc('&nbsp;');
     entryScreen.innerHTML = '&nbsp;';
-});
+}
 
 // INIT CE
-ce.addEventListener('click', () => {
-    if (first) {
-        firstStr = ''
-    }
-    else {
-        secondStr = '';
-    }
+ce.addEventListener('click', fce);
+
+function fce() {
+    if (first) { printCalc('&nbsp;'); }
+    entryStr = '';
     entryScreen.innerHTML = '&nbsp;';
-});
+}
 
 // INIT BACKSPACE
-backspace.addEventListener('click', () => {
-    if (first) {
-        firstStr = firstStr.slice(0, -1);
-        entryScreen.innerHTML = neverEmpty(firstStr); 
-    }
-    else {
-        secondStr = secondStr.slice(0, -1);
-        entryScreen.innerHTML = neverEmpty(secondStr);
-    }
-});
+backspace.addEventListener('click', fbackspace);
+
+function fbackspace() {
+    if (first) { printCalc('&nbsp;'); }
+    entryStr = entryStr.slice(0, -1);
+    entryScreen.innerHTML = neverEmpty(entryStr);
+}
 
 // INIT NEG_POS
-neg_pos.addEventListener('click', () => {
-    if (first) { firstStr = fNeg_pos(firstStr) }
-    else { secondStr = fNeg_pos(secondStr) }
-});
+neg_pos.addEventListener('click', fNegPos);
 
-function fNeg_pos(_str) {
-    if (_str.charAt(0) == '-') {
-        _str = _str.substring(1);
+function fNegPos() {
+    if (first) { printCalc('&nbsp;'); }
+    if (entryStr.charAt(0) == '-') {
+        entryStr = entryStr.substring(1);
     } 
     else {
-        _str = '-' + _str;
+        entryStr = '-' + entryStr;
     }
-    entryScreen.innerHTML = neverEmpty(_str);
-    return _str;
+    entryScreen.innerHTML = neverEmpty(entryStr);
 }
 
 // INIT PERIOD
-period.addEventListener('click', () => {
-    if (first) { firstStr = fPeriod(firstStr); }
-    else { secondStr = fPeriod(secondStr); }
-});
+period.addEventListener('click', fPeriod);
 
-function fPeriod(_str) {
-    if (!_str.includes('.')) {
-        if (entryScreen.innerHTML == '&nbsp;') {
-            _str = '0.';
+function fPeriod() {
+    if (!entryStr.includes('.')) {
+        if (entryScreen.innerHTML == '&nbsp;' || entryStr.length == 0) {
+            if (first) { printCalc('&nbsp;'); }
+            entryStr = '0.';
         }
         else {
-            _str = _str + '.';
+            entryStr = entryStr + '.';
         }
-        entryScreen.innerHTML = _str;
+        entryScreen.innerHTML = entryStr;
     }
-    return _str;
 }
 
 // INIT DIVISION
 division.addEventListener('click', () => {
-    if (first) {
-        if (!firstStr) {
-            firstStr = '0 /';
-        }
-        else {
-            firstStr = `${firstStr} /`;
-        }
-    }
-    else {
-        firstStr = `${fCalculate(firstStr, secondStr)} /`;
-    }
-    printCalc(firstStr);
-    entryScreen.innerHTML = '&nbsp';
-    first = false;
+    followOp('/');
 });
 
 // INIT TIMES
 times.addEventListener('click', () => {
-    if (first) {
-        if (!firstStr) {
-            firstStr = '0 *';
-        }
-        else {
-            firstStr = `${firstStr} *`;
-        }
-    }
-    else {
-        firstStr = `${fCalculate(firstStr, secondStr)} *`;
-    }
-    printCalc(firstStr);
-    entryScreen.innerHTML = '&nbsp';
-    first = false;
+    followOp('*');
 });
 
 // INIT MINUS
 minus.addEventListener('click', () => {
-    if (first) {
-        if (!firstStr) {
-            firstStr = '0 -';
-        }
-        else {
-            firstStr = `${firstStr} -`;
-        }
-    }
-    else {
-        firstStr = `${fCalculate(firstStr, secondStr)} -`;
-    }
-    printCalc(firstStr);
-    entryScreen.innerHTML = '&nbsp';
-    first = false;
+    followOp('-');
 });
 
 // INIT PLUS
 plus.addEventListener('click', () => {
+    followOp('+');
+});
+
+// FOLLOWS ALL OPERATORS
+function followOp(_opStr) {
+    if (entryStr == '-' || entryStr.length == 0) { entryStr = '0'; }
     if (first) {
-        if (!firstStr) {
-            firstStr = '0 +';
+        if (calcScreen.innerHTML.includes('=')) {
+            firstNum = totalNum;
         }
         else {
-            firstStr = `${firstStr} +`;
+            firstNum = parseFloat(entryStr);
         }
+        operatorStr = _opStr;
+        first = false;
     }
     else {
-        firstStr = `${fCalculate(firstStr, secondStr)} +`;
+        secondNum = parseFloat(entryStr);
+        firstNum = fCalculate(firstNum, secondNum, operatorStr);
+        operatorStr = _opStr;
     }
-    printCalc(firstStr);
-    entryScreen.innerHTML = '&nbsp';
-    first = false;
-});
+    printCalc(`${firstNum} ${_opStr}`);
+    entryStr = '';
+    if (entryScreen.innerHTML != divZero) { entryScreen.innerHTML = '&nbsp;'; }
+}
 
 // INIT EQUALS
-equals.addEventListener('click', () => {
-    if (!first && !calcScreen.innerHTML.includes('=')) {
-        firstStr = fCalculate(firstStr, secondStr);
-        printCalc(firstStr);
-        entryScreen.innerHTML = '&nbsp';
+equals.addEventListener('click', fEquals);
+
+function fEquals() {
+    if (entryStr == '-') { entryStr = '0'; }
+    if (!first && !calcScreen.innerHTML.includes('=') && entryStr.length != 0) {
+        secondNum = parseFloat(entryStr);
+        printCalc(`${firstNum} ${operatorStr} ${secondNum} =`);
+        fCalculate(firstNum, secondNum, operatorStr);
+        if (entryScreen.innerHTML != divZero) { entryScreen.innerHTML = totalNum; }
         first = true;
     }
-});
+}
 
-function fCalculate(_str, _str2) {
-    if (_str.includes('/') && _str2 == '0') {
-        entryScreen.innerHTML = 'undefined';
-        totalNum = '0';
+// DO CALCULATIONS
+function fCalculate(_fNum, _sNum, _opStr) {
+    if (_opStr == '/' && _sNum == 0) {
+        entryScreen.innerHTML = divZero;
+        totalNum = 0;
     }
     else {
-        totalNum = `${_str} ${_str2}`.replace(/[^-\d/*+.]/g, '');
-        totalNum = Function('"use strict";return (' + totalNum + ')')();
-        totalNum = totalNum.toString();
-        //totalStr = eval(totalStr);
-        entryScreen.innerHTML = totalNum;
+        switch (_opStr) {
+            case '/':
+                totalNum = _fNum / _sNum;
+                break;
+            case '*':
+                totalNum = _fNum * _sNum;
+                break;
+            case '-':
+                totalNum = _fNum - _sNum;
+                break;
+            case '+':
+                totalNum = _fNum + _sNum;
+                break;
+            default:
+                console.log('This should never happen!');
+        }
     }
-    printCalc(`${_str} ${_str2} =`);
-    secondStr = '';
+    entryStr = '';
+    //totalNum = totalNum.toPrecision(decimals);
     return totalNum;
 }
 
-// FUNCTIONS
+// SUPPORT FUNCTIONS
 function printCalc(_calcStr) {
     _calcStr = _calcStr.replace(/\//g, "÷").replace(/\*/g, "×");
     calcScreen.innerHTML = _calcStr;
@@ -234,5 +246,3 @@ function neverEmpty(_str) {
     }
     return _str;
 }
-
-// KEYBOARD
