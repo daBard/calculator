@@ -61,6 +61,7 @@ main {
     font-size: 3em;
     text-align: right;
     overflow-wrap: break-word;
+    z-index: 100;
 }
 
 #keys-box {

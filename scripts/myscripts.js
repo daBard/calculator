@@ -33,7 +33,6 @@ let first = true;
 
 //INIT KEYBOARD EVENT
 document.addEventListener('keydown', (e) => {
-    console.log(e.code);
     if (e.key >= 0 && e.key <= 9) {
         fdigitKey(e.key)
     }
