@@ -24,7 +24,7 @@ const equals = document.querySelector('#equals');
 
 // GLOBAL VARIABLES
 const divZero = 'undefined';
-//const decimals = 7;
+const decimals = 12;
 let entryStr = '';
 let firstNum = 0;
 let secondNum = 0;
@@ -229,7 +229,7 @@ function fCalculate(_fNum, _sNum, _opStr) {
         }
     }
     entryStr = '';
-    //totalNum = totalNum.toPrecision(decimals);
+    totalNum = parseFloat(totalNum.toPrecision(decimals));
     return totalNum;
 }
 
@@ -244,4 +244,4 @@ function neverEmpty(_str) {
         _str = '&nbsp;';
     }
     return _str;
-}
+} 
